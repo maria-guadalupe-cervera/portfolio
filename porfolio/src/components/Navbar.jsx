@@ -16,14 +16,32 @@ export const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.screenY > 10);
+      setIsScrolled(window.scrollY > 10);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Efecto para deshabilitar el scroll cuando el menú está abierto
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
   return (
+    <>
+    <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:p-4 bg-background">
+      Skip to main content
+    </a>
     <nav
+      role="navigation"
+      aria-label="Main navigation"
       className={cn(
         "fixed w-full z-40 transition-all duration-300",
         isScrolled ? "py-3 bg-background/80 backdrop-blur-md shadow-xs" : "py-5"
@@ -65,19 +83,20 @@ export const Navbar = () => {
 
         <div
           className={cn(
-            "fixed inset-0 bg-background/95 backdroup-blur-md z-40 flex flex-col items-center justify-center",
-            "transition-all duration-300 md:hidden",
+            "fixed inset-0 bg-background z-40 flex flex-col items-center justify-center md:hidden",
+            "transition-all duration-300 h-[100dvh] w-screen", // Usar dvh para manejar la barra de direcciones móvil
             isMenuOpen
               ? "opacity-100 pointer-events-auto"
-              : "opacity-0 pointer-events-none"
+              : "opacity-0 pointer-events-none translate-x-full"
           )}
+          aria-hidden={!isMenuOpen}
         >
-          <div className="flex flex-col space-y-8 text-xl">
+          <div className="flex flex-col space-y-8 text-xl items-center">
             {navItems.map((item, key) => (
               <a
                 key={key}
                 href={item.href}
-                className="text-foreground/80 hover:text-primary transition-colors duration-300"
+                className="text-foreground hover:text-primary transition-colors duration-300 text-2xl font-medium py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
@@ -87,5 +106,6 @@ export const Navbar = () => {
         </div>
       </div>
     </nav>
+    </>
   );
 };

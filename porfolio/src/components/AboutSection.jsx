@@ -38,7 +38,7 @@ return (
                         <a
                             href={cvPdf}
                             download="guadalupe-cervera.pdf"
-                            className="px-6 py-2 rounded-full border border-primary text-primary hover:bg-primary/10 transition-colors duration-300"
+                            className="px-6 py-2 rounded-full border border-primary bg-primary text-white hover:bg-primary/90 hover:border-primary/90 transition-colors duration-300 font-semibold"
                         >
                             Download CV
                         </a>
