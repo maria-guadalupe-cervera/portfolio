@@ -7,6 +7,7 @@ import { AboutSection } from "../components/AboutSection";
 import { SkillsSection } from "../components/SkillsSection";
 import { ProjectSection } from "../components/ProjectSection";
 import { ContactSection } from "../components/ContactSection";
+import { Footer } from "../components/Footer";
 import { useEffect, useState } from "react";
 
 export const Home = () => {
@@ -48,7 +49,7 @@ export const Home = () => {
         <ProjectSection />
         <ContactSection />
       </main>
-        {/* Footer */}
+       <Footer/>
     </div>
   )
 }
