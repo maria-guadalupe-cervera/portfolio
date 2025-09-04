@@ -65,6 +65,9 @@ export const ProjectSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const carouselRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartX, setDragStartX] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
 
   const goToSlide = (index) => {
     if (isAnimating) return;
@@ -83,6 +86,41 @@ export const ProjectSection = () => {
     goToSlide(newIndex);
   };
 
+  const handleDragStart = (clientX) => {
+    if (isAnimating) return;
+    setIsDragging(true);
+    setDragStartX(clientX);
+    setDragOffset(0);
+  };
+
+  const handleDragMove = (clientX) => {
+    if (!isDragging) return;
+    const delta = clientX - dragStartX;
+    setDragOffset(delta);
+  };
+
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    const container = carouselRef.current;
+    const width = container ? container.clientWidth : 0;
+    const threshold = Math.max(50, width * 0.2);
+    const shouldGoNext = dragOffset < -threshold;
+    const shouldGoPrev = dragOffset > threshold;
+
+    setIsDragging(false);
+    setDragOffset(0);
+
+    if (shouldGoNext) {
+      nextSlide();
+    } else if (shouldGoPrev) {
+      prevSlide();
+    } else {
+      // Small snap-back animation
+      setIsAnimating(true);
+      setTimeout(() => setIsAnimating(false), 150);
+    }
+  };
+
   return (
     <section id="projects" className="py-24 px-4 relative">
       <div className="container mx-auto max-w-5xl">
@@ -96,10 +134,37 @@ export const ProjectSection = () => {
           experiences.
         </p>
 
-        <div className="relative px-8 sm:px-12 overflow-hidden" ref={carouselRef}>
-          <div 
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        <div
+          className="relative px-8 sm:px-12 overflow-hidden"
+          ref={carouselRef}
+          onMouseDown={(e) => {
+            const target = e.target;
+            if (target && target.closest && target.closest('[data-no-drag]')) return;
+            handleDragStart(e.clientX);
+          }}
+          onMouseMove={(e) => handleDragMove(e.clientX)}
+          onMouseUp={handleDragEnd}
+          onMouseLeave={handleDragEnd}
+          onTouchStart={(e) => {
+            const target = e.target;
+            if (target && target.closest && target.closest('[data-no-drag]')) return;
+            handleDragStart(e.touches[0].clientX);
+          }}
+          onTouchMove={(e) => {
+            // Prevent vertical scroll from interfering when horizontal dragging
+            if (isDragging) e.preventDefault();
+            handleDragMove(e.touches[0].clientX);
+          }}
+          onTouchEnd={handleDragEnd}
+        >
+          <div
+            className={cn(
+              "flex ease-in-out",
+              isDragging ? "transition-none" : "transition-transform duration-500"
+            )}
+            style={{
+              transform: `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))`,
+            }}
           >
             {projects.map((project, index) => (
               <div
@@ -137,6 +202,7 @@ export const ProjectSection = () => {
             onClick={prevSlide}
             className="absolute left-0 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md hover:bg-background transition-colors duration-200"
             aria-label="Previous project"
+            data-no-drag
             disabled={isAnimating}
           >
             <ChevronLeft className="w-6 h-6 text-foreground" />
@@ -145,6 +211,7 @@ export const ProjectSection = () => {
             onClick={nextSlide}
             className="absolute right-0 top-1/2 -translate-y-1/2 p-2 rounded-full bg-background/80 backdrop-blur-sm border border-border shadow-md hover:bg-background transition-colors duration-200"
             aria-label="Next project"
+            data-no-drag
             disabled={isAnimating}
           >
             <ChevronRight className="w-6 h-6 text-foreground" />
