@@ -1,8 +1,9 @@
 {
+  "installCommand": "cd porfolio && npm install",
+  "buildCommand": "cd porfolio && npm run build",
+  "outputDirectory": "porfolio/dist",
+  "framework": "vite",
   "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
+    { "source": "/(.*)", "destination": "/" }
   ]
 }
