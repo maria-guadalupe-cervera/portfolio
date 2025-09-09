@@ -1,7 +1,4 @@
 {
-  "buildCommand": "cd porfolio && npm run build",
-  "outputDirectory": "porfolio/dist",
-  "installCommand": "cd porfolio && npm install",
   "rewrites": [
     {
       "source": "/(.*)",
