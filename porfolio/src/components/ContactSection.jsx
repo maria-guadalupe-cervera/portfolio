@@ -16,18 +16,43 @@ export const ContactSection = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name");
+    const email = formData.get("email");
+    const message = formData.get("message");
 
     setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message }),
+      });
 
-    setTimeout(() => {
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to send message");
+      }
+
       toast({
         title: "Message sent!",
         description: "Thank you for your message. I'll get back to you soon.",
       });
+
+      // Reset form fields
+      e.currentTarget.reset();
+    } catch (err) {
+      toast({
+        title: "Couldn't send your message",
+        description: "Please try again in a moment or email me directly.",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 return (
     <section 
