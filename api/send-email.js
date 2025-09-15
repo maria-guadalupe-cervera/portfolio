@@ -11,9 +11,31 @@ export default async function handler(req, res) {
   try {
     // Debug: Log the request
     console.log('API Key exists:', !!process.env.RESEND_API_KEY)
-    console.log('Request body:', req.body)
+    console.log('Request body type:', typeof req.body)
 
-    const { name, email, message } = req.body || {}
+    // Robust body parsing (Vercel may pass string/undefined)
+    let body = req.body
+    if (!body) {
+      const raw = await new Promise((resolve) => {
+        let data = ''
+        req.on('data', (chunk) => (data += chunk))
+        req.on('end', () => resolve(data))
+        req.on('error', () => resolve(''))
+      })
+      try {
+        body = raw ? JSON.parse(raw) : {}
+      } catch {
+        body = {}
+      }
+    } else if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body)
+      } catch {
+        body = {}
+      }
+    }
+
+    const { name, email, message } = body || {}
 
     if (!name || !email || !message) {
       console.log('Missing fields:', { name: !!name, email: !!email, message: !!message })
