@@ -27,28 +27,43 @@ export const ContactSection = () => {
 
     setIsSubmitting(true);
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
       const response = await fetch("/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, message }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data?.error || "Failed to send message");
+      if (response.ok) {
+        toast({
+          title: "Message sent!",
+          description: "Thank you for your message. I'll get back to you soon.",
+        });
+        e.currentTarget.reset();
+        return;
       }
 
-      toast({
-        title: "Message sent!",
-        description: "Thank you for your message. I'll get back to you soon.",
-      });
-
-      // Reset form fields
-      e.currentTarget.reset();
+      let errorMessage = "Failed to send message";
+      try {
+        const data = await response.json();
+        errorMessage = data?.error || errorMessage;
+      } catch (_) {
+        try {
+          const text = await response.text();
+          if (text) errorMessage = text;
+        } catch (_) {}
+      }
+      throw new Error(errorMessage);
     } catch (err) {
+      const description = err?.name === 'AbortError'
+        ? 'Request timed out. Please try again.'
+        : (err?.message || 'Please try again in a moment or email me directly.');
       toast({
         title: "Couldn't send your message",
-        description: "Please try again in a moment or email me directly.",
+        description,
       });
     } finally {
       setIsSubmitting(false);
