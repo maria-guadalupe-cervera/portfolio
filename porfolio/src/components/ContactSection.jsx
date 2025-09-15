@@ -20,7 +20,8 @@ export const ContactSection = () => {
     e.preventDefault();
     if (isSubmitting) return;
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const name = formData.get("name");
     const email = formData.get("email");
     const message = formData.get("message");
@@ -42,7 +43,9 @@ export const ContactSection = () => {
           title: "Message sent!",
           description: "Thank you for your message. I'll get back to you soon.",
         });
-        e.currentTarget.reset();
+        if (form && typeof form.reset === 'function') {
+          form.reset();
+        }
         return;
       }
 
