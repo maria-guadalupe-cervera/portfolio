@@ -33,7 +33,7 @@ export const ThemeToggle = () => {
       aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
       title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
       className={cn(
-        "fixed max-sm:hidden top-5 right-5 z-50 p-2 rounded-full transition-colors duration-300",
+        "p-2 rounded-full transition-colors duration-300",
         "hover:bg-accent focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       )}
     >
