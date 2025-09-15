@@ -18,5 +18,14 @@ export default defineConfig({
   css: {
     // ⚡️ Desactiva lightningcss para evitar error en Vercel
     transformer: 'postcss'
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   }
 })

@@ -1,13 +1,12 @@
 {
+  "name": "portfolio-root",
+  "private": true,
+  "packageManager": "npm@10.8.1",
+  "scripts": {
+    "dev:api": "vercel dev --listen 3000",
+    "dev:frontend": "cd porfolio && npm run dev"
+  },
   "dependencies": {
-    "resend": "^4.0.0",
-    "@radix-ui/react-toast": "^1.2.15",
-    "@tailwindcss/vite": "^4.1.12",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.542.0",
-    "react-router-dom": "^7.8.2",
-    "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.12"
+    "resend": "^4.0.0"
   }
 }
